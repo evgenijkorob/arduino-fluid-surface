@@ -13,12 +13,16 @@ const APP_CLASSES = {
   },
   button: {
     tag: 'button',
-    classList: ['button'],
+    classList: ['button', 'mdl-button', 'mdl-js-button', 'mdl-js-ripple-effect'],
     mod: {
       connect: '_action_connect',
       disconnect: '_action_disconnect',
       disabled: '_disabled'
     }
+  },
+  connectInfoPanel: {
+    tag: 'span',
+    classList: ['app__connect-info-panel']
   }
 }
 
@@ -32,7 +36,7 @@ class AppRenderer {
     let dom = document.createElement('div');
     this._renderSkeleton(dom);
     let deviceControl = this.queryAppElemAll(dom, 'deviceControl')[0];
-    this._renderConnectionButtons(deviceControl);
+    this._renderDeviceControlPanel(deviceControl);
     this._dom = dom.children[0];
     return this._dom;
   }
@@ -46,35 +50,50 @@ class AppRenderer {
     appInner.appendChild(deviceControl);
   }
 
-  _renderConnectionButtons(parent) {
-    let connectButton = this.createAppElem('button'),
-        disconnectButton = this.createAppElem('button'),
-        disabledMod = this.getModClass('button', 'disabled'),
-        connectMod = this.getModClass('button', 'connect'),
-        disconnectMod = this.getModClass('button', 'disconnect'),
-        actionAttr = 'data-action';
-    connectButton.classList.add(connectMod);
-    connectButton.textContent = 'подключиться';
-    connectButton.setAttribute(actionAttr, 'connect');
-    disconnectButton.classList.add(disconnectMod, disabledMod);
-    disconnectButton.textContent = 'отключиться';
-    disconnectButton.setAttribute(actionAttr, 'disconnect');
-    parent.append(connectButton, disconnectButton);
+  _renderDeviceControlPanel(parent) {
+    let button = this.createAppElem('button'),
+        connectInfoPanel = this.createAppElem('connectInfoPanel');
+    parent.append(button, connectInfoPanel);
+    this._setConnectButton(button);
+    this.updateInfoPanel('', parent);
   }
 
-  updateConnectionButtons() {
-    let connectBtn = this._dom.querySelector('.' + this.getModClass('button', 'connect')),
-        disconnectBtn = this._dom.querySelector('.' + this.getModClass('button', 'disconnect')),
-        disabledMod = this.getModClass('button', 'disabled'),
-        isDeviceConnected = this._data.device.isConnected();
+  updateInfoPanel(text, parent) {
+    if (!parent) {
+      parent = this._dom;
+    }
+    let panel = this.queryAppElemAll(parent, 'connectInfoPanel')[0];
+    panel.textContent = text;
+  }
+
+  updateConnectionButton() {
+    let deviceControl = this.queryAppElemAll(this._dom, 'deviceControl')[0],
+        button = this.queryAppElemAll(deviceControl, 'button')[0],
+        isDeviceConnected = this._data.device.isConnected;
     if (isDeviceConnected) {
-      connectBtn.classList.add(disabledMod);
-      disconnectBtn.classList.remove(disabledMod);
+      this._setDisconnectButton(button);
     }
     else {
-      connectBtn.classList.remove(disabledMod);
-      disconnectBtn.classList.add(disabledMod);
+      this._setConnectButton(button);
     }
+  }
+
+  _setConnectButton(button) {
+    let connectMod = this.getModClass('button', 'connect'),
+        disconnectMod = this.getModClass('button', 'disconnect');
+    button.classList.remove(disconnectMod);
+    button.classList.add(connectMod);
+    button.setAttribute('data-action', 'connect');
+    button.textContent = 'подключиться';
+  }
+
+  _setDisconnectButton(button) {
+    let connectMod = this.getModClass('button', 'connect'),
+        disconnectMod = this.getModClass('button', 'disconnect');
+    button.classList.remove(connectMod);
+    button.classList.add(disconnectMod);
+    button.setAttribute('data-action', 'disconnect');
+    button.textContent = 'отключиться';
   }
 }
 

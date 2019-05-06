@@ -1,5 +1,28 @@
+.app {
+  height: 100%;
+
+  background: #36393e;
+}
+
+.app__inner {
+  padding-top: 7rem;
+}
+
 .app__device-control {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+
   display: flex;
   flex-flow: row wrap;
-  padding: 1rem;
+  align-items: center;
+  padding: 1.2rem 2rem;
+}
+
+.app__connect-info-panel {
+  margin-left: 2rem;
+
+  font-size: 1rem;
+  color: #bdbdbd;
 }

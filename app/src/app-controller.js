@@ -16,11 +16,11 @@ class AppController {
     this.data.device
     .on('data', console.log)
     .on('close', function() {
-      alert('Девайс отключён!');
-    })
+      this.view.updateInfoPanel('Девайс отключён!');
+    }.bind(this))
     .on('open', function() {
-      alert('Девайс подключён!');
-    });
+      this.view.updateInfoPanel('Девайс подключён!');
+    }.bind(this));
   }
 
   setHandlers() {
@@ -34,12 +34,12 @@ class AppController {
       switch(action) {
         case 'connect':
           if (await this.data.device.connect()) {
-            this.view.updateConnectionButtons();
+            this.view.updateConnectionButton();
           };
           break;
         case 'disconnect':
           if (await this.data.device.disconnect()) {
-            this.view.updateConnectionButtons();
+            this.view.updateConnectionButton();
           };
           break;
       }
