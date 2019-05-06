@@ -1,0 +1,12 @@
+@import url("./style/app.css");
+@import url("./style/button.css");
+
+html {
+  font-size: 20px;
+  font-family: sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}

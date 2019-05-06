@@ -1,0 +1,5 @@
+.app__device-control {
+  display: flex;
+  flex-flow: row wrap;
+  padding: 1rem;
+}

@@ -2,7 +2,7 @@ const SerialPort = require('serialport')
 const Readline = require('@serialport/parser-readline')
 
 class DeviceController {
-  constructor(deviceSerialNum, baudRate) {
+  constructor(deviceSerialNum = '75638303237351B03151', baudRate = 9600) {
     this.serialNum = deviceSerialNum;
     this.baudRate = baudRate;
     this.devicePortInfo = null;
@@ -40,10 +40,29 @@ class DeviceController {
       if (!this.dataHandler) {
         throw new Error('Обработчик данных не назначен!');
       }
+      if (this.isConnected) {
+        throw new Error('Уже подключено!');
+      }
       await this._connectToDevice();
     }
     catch (e) {
       this.errorHandler(e);
+      return false;
+    }
+    return true;
+  }
+
+  async disconnect() {
+    try {
+      if (!this.isConnected) {
+        throw new Error('Ничего не подключено!');
+      }
+      await this.port.close();
+      return true;
+    }
+    catch (e) {
+      this.errorHandler(e);
+      return false;
     }
   }
 
@@ -58,18 +77,34 @@ class DeviceController {
     this.port = new SerialPort(
       this.devicePortInfo.comName,
       {
-        baudRate: this.baudRate
+        baudRate: this.baudRate,
+        autoOpen: false
       }
     );
-    this.port.on('open', () => {
-      this.port.pipe(this.parser);
-      this.parser.on('data', this.dataHandler);
-      if (this.openHandler) {
-        this.openHandler();
-      }
+    let openingPromise = new Promise((resolve, reject) => {
+      this.port.open((err) => {
+        if (err) {
+          reject(err);
+        }
+      });
+      this.port.on('error', this.errorHandler);
+      this.port.on('close', this.closeHandler);
+      this.port.on('open', () => {
+        this.port.pipe(this.parser);
+        this.parser.on('data', this.dataHandler);
+        if (this.openHandler) {
+          this.openHandler();
+        }
+        resolve();
+      });
     });
-    this.port.on('error', this.errorHandler);
-    this.port.on('close', this.closeHandler);
+    try {
+      await openingPromise;
+      return true;
+    }
+    catch (e) {
+      return false;
+    }
   }
 
   async _searchPort() {
@@ -89,6 +124,15 @@ class DeviceController {
     }
     catch (e) {
       throw e;
+    }
+  }
+
+  get isConnected() {
+    if (this.port) {
+      return this.port.isOpen;
+    }
+    else  {
+      return false;
     }
   }
 }

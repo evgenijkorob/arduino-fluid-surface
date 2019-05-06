@@ -14,7 +14,7 @@ function createWindow () {
       webPreferences: { nodeIntegration: true }
     }
   );
-  mainWindow.webContents.loadFile(path.join(__dirname,"index.html"));
+  mainWindow.webContents.loadFile(path.join(__dirname,"./app/index.html"));
   mainWindow.webContents.openDevTools();
   mainWindow.on('closed', function () {
     mainWindow = null;
