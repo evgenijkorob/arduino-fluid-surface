@@ -28,3 +28,6 @@ document.body.addEventListener('click', (ev) => {
   }
 });
 
+class AppController {
+  
+}
