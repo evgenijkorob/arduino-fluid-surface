@@ -6,6 +6,8 @@
 
 .app__inner {
   padding-top: 7rem;
+
+  background: inherit;
 }
 
 .app__device-control {
@@ -18,6 +20,8 @@
   flex-flow: row wrap;
   align-items: center;
   padding: 1.2rem 2rem;
+
+  background: inherit;
 }
 
 .app__connect-info-panel {
@@ -25,4 +29,6 @@
 
   font-size: 1rem;
   color: #bdbdbd;
+
+  user-select: none;
 }

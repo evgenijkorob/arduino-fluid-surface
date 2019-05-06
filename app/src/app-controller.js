@@ -17,9 +17,11 @@ class AppController {
     .on('data', console.log)
     .on('close', function() {
       this.view.updateInfoPanel('Девайс отключён!');
+      this.view.updateConnectionButton();
     }.bind(this))
     .on('open', function() {
       this.view.updateInfoPanel('Девайс подключён!');
+      this.view.updateConnectionButton();
     }.bind(this));
   }
 
@@ -33,14 +35,10 @@ class AppController {
       let action = target.getAttribute(actAttr);
       switch(action) {
         case 'connect':
-          if (await this.data.device.connect()) {
-            this.view.updateConnectionButton();
-          };
+          await this.data.device.connect();
           break;
         case 'disconnect':
-          if (await this.data.device.disconnect()) {
-            this.view.updateConnectionButton();
-          };
+          await this.data.device.disconnect();
           break;
       }
     });
