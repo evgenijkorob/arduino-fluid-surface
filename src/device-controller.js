@@ -14,6 +14,7 @@ class DeviceController {
     this.errorHandler = function(err) {
       alert(err);
     };
+    return this;
   }
 
   on(eventName, callback) {
@@ -31,6 +32,7 @@ class DeviceController {
         this.closeHandler = callback;
         break;
     }
+    return this;
   }
 
   async connect() {
@@ -91,29 +93,4 @@ class DeviceController {
   }
 }
 
-let device = new DeviceController(
-  '75638303237351B03151',
-  9600
-);
-
-device.on('data', console.log);
-device.on('close', function() {
-  alert('Девайс отключён!');
-});
-device.on('open', function() {
-  alert('Девайс подключён!');
-});
-
-document.body.addEventListener('click', (ev) => {
-  const actAttr = 'data-action';
-  let target = ev.target.closest(`*[${actAttr}]`);
-  if (!target) {
-    return;
-  }
-  let action = target.getAttribute(actAttr);
-  switch(action) {
-    case 'connect':
-      device.connect();
-      break;
-  }
-});
+module.exports = DeviceController;
