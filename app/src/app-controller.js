@@ -1,20 +1,31 @@
 const AppRenderer = require('./app-renderer');
 const AppModel = require('./app-model');
+const DeviceOutputParser = require('./device-out-parser');
 
 class AppController {
   constructor() {
     this.data = new AppModel();
     this.view = new AppRenderer(this.data);
+    this.outputParser = new DeviceOutputParser();
+    this.setParserCallbacks();
     this.setDevice();
     this.data.dom = this.view.render();
     this.setHandlers();
     return this.data.dom;
   }
 
+  setParserCallbacks() {
+    this.outputParser
+    .on('mode', (mode) => console.log('Start in ' + mode + ' mode'))
+    .on('begin', () => console.log('Beginning...'))
+    .on('data', (data) => console.log(data))
+    .on('end', () => console.log('Ending...'));
+  }
+
   setDevice() {
     this.data.createDevice();
     this.data.device
-    .on('data', console.log)
+    .on('data', (data) => this.outputParser.parse(data))
     .on('close', function() {
       this.view.updateInfoPanel('Девайс отключён!');
       this.view.updateConnectionButton();
