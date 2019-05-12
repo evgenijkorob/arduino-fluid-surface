@@ -14,7 +14,6 @@ class DeviceController {
     this.errorHandler = function(err) {
       alert(err);
     };
-    return this;
   }
 
   on(eventName, callback) {

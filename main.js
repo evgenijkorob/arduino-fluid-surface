@@ -1,8 +1,8 @@
-const { 
-  app, 
+const {
+  app,
   BrowserWindow
 } = require('electron');
-const path = require('path')
+const path = require('path');
 
 let mainWindow;
 
@@ -15,7 +15,6 @@ function createWindow () {
     }
   );
   mainWindow.webContents.loadFile(path.join(__dirname,"./app/index.html"));
-  mainWindow.webContents.openDevTools();
   mainWindow.on('closed', function () {
     mainWindow = null;
   });

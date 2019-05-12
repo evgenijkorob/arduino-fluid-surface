@@ -13,16 +13,41 @@ const APP_CLASSES = {
   },
   button: {
     tag: 'button',
-    classList: ['button', 'mdl-button', 'mdl-js-button', 'mdl-js-ripple-effect'],
+    classList: ['button', 'mdl-button', 'mdl-js-button', 'mdl-js-ripple-effect', 'mdl-button--accent'],
     mod: {
       connect: '_action_connect',
       disconnect: '_action_disconnect',
+      save: '_action_save',
+      switchChart: '_action_switch-chart',
       disabled: '_disabled'
     }
   },
   connectInfoPanel: {
     tag: 'span',
     classList: ['app__connect-info-panel']
+  },
+  chartsControlPanel: {
+    tag: 'div',
+    classList: ['app__charts-control-panel']
+  },
+  chartsHolder: {
+    tag: 'div',
+    classList: ['app__charts-holder']
+  },
+  chartContainer: {
+    tag: 'div',
+    classList: ['app__chart-container'],
+    mod: {
+      invisible: '_invisible'
+    }
+  },
+  chart: {
+    tag: 'canvas',
+    classList: ['app__chart'],
+    mod: {
+      surface: '_mode_surface',
+      deep: '_mode_deep'
+    }
   }
 }
 
@@ -35,8 +60,10 @@ class AppRenderer {
   render() {
     let dom = document.createElement('div');
     this._renderSkeleton(dom);
-    let deviceControl = this.queryAppElemAll(dom, 'deviceControl')[0];
+    let appInner = this.queryAppElemAll(dom, 'appInner')[0],
+        deviceControl = this.queryAppElemAll(appInner, 'deviceControl')[0];
     this._renderDeviceControlPanel(deviceControl);
+    this._renderChartsControlPanel(appInner);
     this._dom = dom.children[0];
     return this._dom;
   }
@@ -50,12 +77,84 @@ class AppRenderer {
     appInner.appendChild(deviceControl);
   }
 
+  _renderChartsControlPanel(parent) {
+    let panel = this.createAppElem('chartsControlPanel'),
+        switchButton = this.createAppElem('button'),
+        holder = this.createAppElem('chartsHolder');
+    parent.appendChild(panel);
+    panel.append(switchButton, holder);
+    //switchButton.textContent = 'Сменить график';
+    switchButton.setAttribute('data-action', 'switch-chart');
+    switchButton.classList.add(this.getModClass('button', 'switch-chart'));
+    this._renderChartsContainers(holder);
+  }
+
+  _renderChartsContainers(parent) {
+    let surfaceContainer = this.createAppElem('chartContainer'),
+        deepContainer = this.createAppElem('chartContainer'),
+        chartSurface = this.createAppElem('chart'),
+        chartDeep = this.createAppElem('chart'),
+        surfaceMod = this.getModClass('chart', 'surface'),
+        deepMod = this.getModClass('chart', 'deep');
+    parent.append(surfaceContainer, deepContainer);
+    deepContainer.appendChild(chartDeep);
+    surfaceContainer.appendChild(chartSurface);
+    chartSurface.classList.add(surfaceMod);
+    chartDeep.classList.add(deepMod);
+    this._data.charts.surface.canvas = chartSurface;
+    this._data.charts.deep.canvas = chartDeep;
+    this.updateCharts(parent);
+  }
+
   _renderDeviceControlPanel(parent) {
-    let button = this.createAppElem('button'),
+    let connectButton = this.createAppElem('button'),
+        saveButton = this.createAppElem('button'),
         connectInfoPanel = this.createAppElem('connectInfoPanel');
-    parent.append(button, connectInfoPanel);
-    this._setConnectButton(button);
+    parent.append(connectButton, saveButton, connectInfoPanel);
+    this._setConnectButton(connectButton);
+    this._setSaveButton(saveButton);
     this.updateInfoPanel('', parent);
+  }
+
+  _setSaveButton(button) {
+    button.textContent = 'Сохранить';
+    button.setAttribute('data-action', 'save');
+    button.classList.add(this.getModClass('button', 'save'));
+  }
+
+  updateSaveButton(isEnabled) {
+    let saveMod = this.getModClass('button', 'save'),
+        button = this._dom.querySelector('.' + saveMod);
+    if (isEnabled) {
+      button.removeAttribute('disabled');
+    }
+    else {
+      button.setAttribute('disabled', 'true');
+    }
+  }
+
+  updateCharts(parent) {
+    if (!parent) {
+      parent = this._dom;
+    }
+    let invisibleMod = this.getModClass('chartContainer', 'invisible'),
+        deepChartClass = this.getModClass('chart', 'deep'),
+        deepContainer = parent.querySelector('.' + deepChartClass).parentNode,
+        surfaceChartClass = this.getModClass('chart', 'surface'),
+        surfaceContainer = parent.querySelector('.' + surfaceChartClass).parentNode,
+        charts = this._data.charts;
+    if (charts.deep.chart) {
+      deepContainer.classList.remove(invisibleMod);
+    }
+    else {
+      deepContainer.classList.add(invisibleMod);
+    }
+    if (charts.surface.chart) {
+      surfaceContainer.classList.remove(invisibleMod);
+    }
+    else {
+      surfaceContainer.classList.add(invisibleMod);
+    }
   }
 
   updateInfoPanel(text, parent) {

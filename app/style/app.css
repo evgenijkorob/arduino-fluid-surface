@@ -1,10 +1,15 @@
 .app {
   height: 100%;
 
-  background: #36393e;
+  color: rgb(182, 182, 182);
+
+  background: #000000;
 }
 
 .app__inner {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
   padding-top: 7rem;
 
   background: inherit;
@@ -19,9 +24,10 @@
   display: flex;
   flex-flow: row wrap;
   align-items: center;
-  padding: 1.2rem 2rem;
+  padding: 0.7rem 2rem;
 
   background: inherit;
+  box-shadow: 0 0 5px #00000057;
 }
 
 .app__connect-info-panel {
@@ -31,4 +37,15 @@
   color: #bdbdbd;
 
   user-select: none;
+}
+
+.app__chart-container {
+  width: 80vw;
+  margin-bottom: 2rem;
+
+  background: #000000;
+}
+
+.app__chart-container_invisible {
+  display: none;
 }

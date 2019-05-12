@@ -1,10 +1,12 @@
 .button {
   height: auto;
-  padding: 0.4rem 1.4rem;
+  padding: 0.6rem 1.8rem;
 
   font-size: 0.9rem;
   color: #f0f0f0;
   text-transform: uppercase;
 
-  background: #555a61;
+  cursor: pointer;
+
+  user-select: none;
 }
